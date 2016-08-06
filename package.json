@@ -1,6 +1,6 @@
 {
   "name": "most-dispatch",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A selective multicast operator for Most.js",
   "repository": "https://github.com/axefrog/dispatch",
   "main": "lib/index.js",
@@ -27,15 +27,15 @@
     "most": "*"
   },
   "devDependencies": {
-    "most": "*",
     "babel-cli": "^6.7.5",
     "babel-eslint": "^6.0.3",
     "babel-plugin-espower": "^2.2.0",
-    "babel-preset-es2015": "^6.6.0",
+    "babel-preset-node6": "^11.0.0",
     "chai": "^3.5.0",
     "eslint": "^2.8.0",
     "mkdirp": "^0.5.1",
     "mocha": "^2.5.3",
+    "most": "*",
     "most-test": "^1.0.2",
     "power-assert": "^1.4.1"
   }
