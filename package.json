@@ -1,6 +1,6 @@
 {
   "name": "most-dispatch",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A selective multicast operator for Most.js",
   "repository": "https://github.com/axefrog/dispatch",
   "main": "lib/index.js",
