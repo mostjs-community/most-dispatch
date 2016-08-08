@@ -12,8 +12,8 @@ export class BasicStore
   }
 
   add(key, item) {
-    const items = (this.items[key] || (this.items[key] = []));
     const isFirst = isEmptyObject(this.items);
+    const items = (this.items[key] || (this.items[key] = []));
     items.push(item);
     return isFirst;
   }
