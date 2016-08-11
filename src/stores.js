@@ -1,4 +1,7 @@
 export function isEmptyObject(obj) { 
+  if(Object.getOwnPropertySymbols(obj).length > 0) {
+    return false;
+  }
   for(var x in obj) { // eslint-disable-line no-unused-vars
     return false;
   }
