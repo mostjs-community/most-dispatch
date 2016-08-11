@@ -1,6 +1,6 @@
 # Dispatch - A selective multicast operator for Most.js
 
-[![Build Status](https://travis-ci.org/axefrog/most-dispatch.svg?branch=master)](https://travis-ci.org/axefrog/most-dispatch)
+[![Build Status](https://travis-ci.org/mostjs-community/most-dispatch.svg?branch=master)](https://travis-ci.org/axefrog/most-dispatch)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cujojs/most)
 
 This operator works like a mail room operation. If only a small number of packages and letters are received in a given time period and there are only a small number of potential recipients, it's usually ok to just stick the letters and packages on a shelf and let people come by and pick things up themselves. The same is true of a primary event stream being filtered by a number of downstream consumers.
