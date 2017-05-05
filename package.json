@@ -1,9 +1,10 @@
 {
   "name": "most-dispatch",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A selective multicast operator for Most.js",
   "repository": "https://github.com/axefrog/dispatch",
   "main": "lib/index.js",
+  "typings": "type-definitions/index.d.ts",
   "scripts": {
     "test": "mocha",
     "lint": "eslint src/*.js",
