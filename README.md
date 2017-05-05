@@ -9,9 +9,15 @@ As the number of inbound items and the number of potential recipients increases 
 
 ## Installation
 
-```
+```bash
+# Using NPM:
 npm install --save most-dispatch
+
+# Using Yarn
+yarn add most-dispatch
 ```
+
+Most.js is a wildcard-versioned peer dependency, which means you don't have to fight whatever version _most-dispatch_ would otherwise be using.
 
 ## Usage
 
@@ -61,19 +67,58 @@ Note also that the `select` function is attached only to the stream object retur
 
 ## Example
 
-This example builds an immutable map of streams as events are received, keyed by the id of the event. Actually running those streams is an exercise left to the reader. 
+This example is contrived, but demonstrates splitting an inbound stream into a set of derived streams using the dispatch function. The streams are kept in an immutable map (as an example that will often be applicable to other use cases) and all streams are then merged in order to take a look at their output.
 
 ```js
 import Immutable from 'immutable';
-import dispatch from 'most-dispatch';
+import {dispatch} from 'most-dispatch';
+import {periodic, scan, loop, filter, map} from 'most';
 
-function buildList(event$) {
-  return event$
-    .thru(dispatch(event => event.id))
-    .scan((map, [event, select]) => {
-      const stream = select(event.id).startWith(event);
-      return map.has(event.id) ? map : map.set(event.id, stream);
-    }, Immutable.OrderedMap)
-    .skipRepeatsWith(Immutable.is);
+function getDispatchKey(n) {
+  return String.fromCharCode(n % 3 + 65);
 }
+
+function updateStreamsMap({counter, streams}, [num, select]) {
+  const key = getDispatchKey(num);
+  if(streams.has(key)) {
+    return {seed: {counter, map}, value: null};
+  }
+  const multiplier = (counter + 1) * 2;
+  const stream = map(n => `Emitted by stream ${key}: ${n} * ${multiplier} = ${n * multiplier}`, select(key));
+  streams = streams.set(key, stream);
+  return {
+    seed: {counter: counter + 1, streams},
+    value: {key, streams}
+  };
+}
+
+function delegateEvents(num$) {
+  const dispatcher$ = dispatch(getDispatchKey, num$);
+  const initial = {counter: 0, map: Immutable.OrderedMap()};
+  const streams$ = loop(updateStreamsMap, initial, dispatcher$);
+  return filter(latest => latest !== null, streams$);
+}
+
+const number$ = scan(n => n + 1, periodic(100), 500); // ==> 500, 501, 502, ...
+
+delegateEvents(number$)
+  .flatMap(({key, streams}) => streams.get(key))
+  .take(10)
+  .tap(event => console.log('event:', event))
+  .drain();
+```
+
+Output:
+
+```
+event: Emitted by stream A: 500 * 2 = 1000
+event: Emitted by stream B: 501 * 4 = 2004
+event: Emitted by stream C: 502 * 6 = 3012
+event: Emitted by stream A: 503 * 2 = 1006
+event: Emitted by stream B: 504 * 4 = 2016
+event: Emitted by stream C: 505 * 6 = 3030
+event: Emitted by stream A: 506 * 2 = 1012
+event: Emitted by stream B: 507 * 4 = 2028
+event: Emitted by stream C: 508 * 6 = 3048
+event: Emitted by stream A: 509 * 2 = 1018
 ```

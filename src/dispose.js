@@ -4,8 +4,7 @@ export const emptyDisposable = {
   dispose() {}
 };
 
-export class DispatchDisposable
-{
+export class DispatchDisposable {
   constructor(source, sink, key) {
     this.source = source;
     this.sink = sink;

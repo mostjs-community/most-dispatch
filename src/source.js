@@ -1,17 +1,16 @@
 import Pipe from 'most/lib/sink/Pipe';
 import {DispatchDisposable, emptyDisposable, dispose} from './dispose';
-import {BasicStore} from './stores';
+import {Store} from './store';
 import {tryEvent, tryEnd} from './try';
 
 const defaultKey = Symbol('DispatchSource');
 const identity = x => x;
 
-export default class DispatchSource
-{
-  constructor(stream, f = identity, store = new BasicStore()) {
+export default class DispatchSource {
+  constructor(stream, f = identity) {
     this.stream = stream;
     this.f = f;
-    this._store = store;
+    this._store = new Store();
     this._disposable = emptyDisposable;
     this._boundSelect = key => this.select(key);
   }
@@ -40,7 +39,7 @@ export default class DispatchSource
     error(this._store[Symbol.iterator](), t, e);
   }
 
-  select(key) {
+  select(key, initial) {
     const source = new TargetSource(this, key);
     return new this.stream.constructor(source);
   }
@@ -62,17 +61,13 @@ function wrap(event, select) {
 }
 
 function event(it, t, x) {
-  let i = 0;
   for(let sink of it) {
-    i++;
     tryEvent(t, x, sink);
   }
 }
 
 function end(it, t, x) {
-  let i = 0;
   for(let sink of it) {
-    i++;
     tryEnd(t, x, sink);
   }
 }
@@ -83,8 +78,7 @@ function error(it, t, e) {
   }
 }
 
-class TargetSource
-{
+class TargetSource {
   constructor(source, key) {
     this.key = key;
     this.source = source;
