@@ -1,4 +1,6 @@
-import Pipe from 'most/lib/sink/Pipe';
+const {newStream} = require('@most/core');
+
+import {Pipe} from './pipe';
 import {DispatchDisposable, emptyDisposable, dispose} from './dispose';
 import {Store} from './store';
 import {tryEvent, tryEnd} from './try';
@@ -41,12 +43,12 @@ export default class DispatchSource {
 
   select(key, initial) {
     const source = new TargetSource(this, key);
-    return new this.stream.constructor(source);
+    return newStream(source.run.bind(source));
   }
 
   add(sink, scheduler, key) {
     if(this._store.add(key, sink)) {
-      this._disposable = this.stream.source.run(this, scheduler);
+      this._disposable = this.stream.run(this, scheduler);
     }
     return new DispatchDisposable(this, sink, key);
   }

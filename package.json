@@ -25,7 +25,7 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "most": "*"
+    "@most/core": "*"
   },
   "devDependencies": {
     "babel-cli": "^6.7.5",
@@ -36,8 +36,7 @@
     "eslint": "^3.19.0",
     "mkdirp": "^0.5.1",
     "mocha": "^3.3.0",
-    "most": "*",
-    "most-test": "^1.3.0",
+    "@most/core": "*",
     "power-assert": "^1.4.1",
     "rimraf": "^2.6.1"
   }

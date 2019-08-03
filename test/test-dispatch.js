@@ -1,6 +1,11 @@
 const assert = require('power-assert');
 const {dispatch} = require('../src');
-const {Stream, empty, from, filter, merge, loop, map, join, reduce} = require('most');
+const {Empty, empty, withItems, periodic, filter, merge, loop, map, join} = require('@most/core');
+const {reduce} = require('./helpers/reduce');
+
+function from(inputs) {
+  return withItems(inputs)(periodic(0));
+}
 
 describe('[most-dispatch]', () => {
   describe('dispatch()', () => {
@@ -16,16 +21,24 @@ describe('[most-dispatch]', () => {
       const a$ = empty();
       const b$ = d(a$);
 
-      assert(b$ instanceof Stream);
+      assert("run" in b$);
     });
 
+    const arraySink = () => {
+      const result = [];
+      return {
+        error: (t, err) => undefined,
+        event: (t, evt) => console.log(evt) && result.push(evt),
+        end: (t) => undefined,
+        result
+      };
+    };
     it('emits the input values combined as a tuple with a selector function', () => {
       const d = dispatch(x => x);
       const inputs = [3, 5, 7];
       const a$ = from(inputs);
       const b$ = d(a$);
-      return b$
-        .reduce((arr, x) => (arr.push(x), arr), [])
+      return reduce((arr, x) => (arr.push(x), arr), [], b$)
         .then(values => {
           assert(values.length === 3);
           values.forEach((v, i) => {
@@ -50,11 +63,10 @@ describe('[most-dispatch]', () => {
       ];
       const a$ = from(inputs);
       const b$ = d(a$);
-      const c$ = b$.select(3).map(x => ({p: x.b}));
-      const d$ = b$.select(5).map(x => ({q: x.b}));
+      const c$ = map(x => ({p: x.b}), b$.select(3));
+      const d$ = map(x => ({q: x.b}), b$.select(5));
       const e$ = merge(c$, d$);
-      return e$
-        .reduce((arr, x) => (arr.push(x), arr), [])
+      return reduce((arr, x) => (arr.push(x), arr), [], e$)
         .then(values => {
           assert.deepEqual(values, [
             {p: 100},
