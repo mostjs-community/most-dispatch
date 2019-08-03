@@ -5,6 +5,7 @@
            If not supplied, `f` defaults to an identity function, i.e. x => x
 */
 
+const {newStream} = require('@most/core');
 import DispatchSource from './source';
 
 function dispatch(f, stream) {
@@ -13,9 +14,9 @@ function dispatch(f, stream) {
       return stream;
     }
     const source = new DispatchSource(stream, f);
-    const newStream = new stream.constructor(source);
-    newStream.select = key => source.select(key);
-    return newStream;
+    const streamNew = newStream(source.run.bind(source));
+    streamNew.select = key => source.select(key);
+    return streamNew;
   };
   return stream ? dispatcher(stream) : dispatcher;
 }
